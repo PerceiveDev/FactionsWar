@@ -1,0 +1,8 @@
+name: FactionsWar
+main: me.endureblackout.factionswar.FactionsWar
+version: 1.0
+description: A FactionsOne FactionsWar plugin.
+author: [EndureBlackout]
+commands:
+  faction:
+    description: Main Command
