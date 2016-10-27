@@ -1,8 +1,14 @@
 name: FactionsWar
-main: me.endureblackout.factionswar.FactionsWar
+main: com.perceivedev.factionswar.FactionsWar
 version: 1.0
-description: A FactionsOne FactionsWar plugin.
+description: A FactionsWar plugin for FactionsOne
 author: [EndureBlackout]
 commands:
   faction:
-    description: Main Command
+    description: Main command for FactionsWar
+    # A catch so that if something goes wrong while loading the plugin
+    # you'll actually have a nice message instead of showing something
+    # like "/faction" (usage)
+    #
+    # Also kinda nice if you forget to register your command handler :P
+    usage: "\u00a7cOops! Something went wrong!"
