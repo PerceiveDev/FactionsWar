@@ -24,79 +24,79 @@ import com.perceivedev.factionswar.utils.IconMenu;
 
 public class CommandHandler implements CommandExecutor {
 
-	FactionsWar									core;
-	private static IconMenu						menu;
-	public static HashMap<String, List<UUID>>	queued	= new HashMap<String, List<UUID>>();
+    FactionsWar                               core;
+    private static IconMenu                   menu;
+    public static HashMap<String, List<UUID>> queued = new HashMap<String, List<UUID>>();
 
-	public CommandHandler(FactionsWar instance) {
-		core = instance;
-	}
+    public CommandHandler(FactionsWar instance) {
+        core = instance;
+    }
 
-	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (cmd.getName().equalsIgnoreCase("faction")) {
-			if (args.length == 1) {
-				if (args[0].equalsIgnoreCase("war")) {
-					menu = new IconMenu(ChatColor.RED + "FactionsWar", 27, InventoryHandler::onItemClick, core);
-					List<UUID> found = new ArrayList<UUID>();
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        if (cmd.getName().equalsIgnoreCase("faction")) {
+            if (args.length == 1) {
+                if (args[0].equalsIgnoreCase("war")) {
+                    menu = new IconMenu(ChatColor.RED + "FactionsWar", 27, InventoryHandler::onItemClick, core);
+                    List<UUID> found = new ArrayList<UUID>();
 
-					if (getFaction((Player) sender).getFPlayerLeader().getPlayer() == (Player) sender) {
-						for (int i = 0; i != Bukkit.getOnlinePlayers().size(); i++) {
-							for (Player p : Bukkit.getOnlinePlayers()) {
-								if (!(p == (Player) sender)) {
-									if (!found.contains(p.getUniqueId())) {
-										if (getFaction(p) == getFaction((Player) sender)) {
-											sender.sendMessage(p.getName());
-											Player p1 = p.getPlayer();
+                    if (getFaction((Player) sender).getFPlayerLeader().getPlayer() == (Player) sender) {
+                        for (int i = 0; i != Bukkit.getOnlinePlayers().size(); i++) {
+                            for (Player p : Bukkit.getOnlinePlayers()) {
+                                if (!(p == (Player) sender)) {
+                                    if (!found.contains(p.getUniqueId())) {
+                                        if (getFaction(p) == getFaction((Player) sender)) {
+                                            sender.sendMessage(p.getName());
+                                            Player p1 = p.getPlayer();
 
-											if (p1 == sender) {
-												continue;
-											}
+                                            if (p1 == sender) {
+                                                continue;
+                                            }
 
-											ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
-											SkullMeta meta = (SkullMeta) skull.getItemMeta();
-											meta.setOwner(p1.getName());
-											skull.setItemMeta(meta);
+                                            ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
+                                            SkullMeta meta = (SkullMeta) skull.getItemMeta();
+                                            meta.setOwner(p1.getName());
+                                            skull.setItemMeta(meta);
 
-											menu.setOption(i, skull, p1.getName());
-											found.add(p1.getUniqueId());
-										}
-									}
-								}
-							}
-						}
+                                            menu.setOption(i, skull, p1.getName());
+                                            found.add(p1.getUniqueId());
+                                        }
+                                    }
+                                }
+                            }
+                        }
 
-						menu.open((Player) sender);
-					}
-				}
-			}
-		}
+                        menu.open((Player) sender);
+                    }
+                }
+            }
+        }
 
-		// if (cmd.getName().equalsIgnoreCase("faction")) {
-		// if (sender instanceof Player) {
-		// Player p = (Player) sender;
-		//
-		// p.sendMessage(ChatColor.GREEN + "Hi");
-		// return true;
-		// }
-		// }
-		return true;
-	}
+        // if (cmd.getName().equalsIgnoreCase("faction")) {
+        // if (sender instanceof Player) {
+        // Player p = (Player) sender;
+        //
+        // p.sendMessage(ChatColor.GREEN + "Hi");
+        // return true;
+        // }
+        // }
+        return true;
+    }
 
-	public Faction getFPlayerFaction(FPlayer p) {
-		Faction fac = p.getFaction();
+    public Faction getFPlayerFaction(FPlayer p) {
+        Faction fac = p.getFaction();
 
-		return fac;
-	}
+        return fac;
+    }
 
-	public static Faction getFaction(Player p) {
-		FPlayer fPlayer = FPlayers.i.get(p);
-		Faction fac = fPlayer.getFaction();
+    public static Faction getFaction(Player p) {
+        FPlayer fPlayer = FPlayers.i.get(p);
+        Faction fac = fPlayer.getFaction();
 
-		return fac;
-	}
+        return fac;
+    }
 
-	public static IconMenu getMenu() {
-		return menu;
-	}
+    public static IconMenu getMenu() {
+        return menu;
+    }
 }
