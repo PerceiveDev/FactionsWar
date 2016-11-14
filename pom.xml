@@ -5,7 +5,7 @@
 	<artifactId>factionswar</artifactId>
 	<version>1.0.0</version>
 	<name>FactionsWar</name>
-	<description>A FactionsWar plugin for FactionsOne</description>
+	<description>A war plugin for FactionsOne</description>
 	<repositories>
 		<repository>
 			<id>spigot-repo</id>
@@ -26,6 +26,12 @@
 			<systemPath>${basedir}/lib/factionsone-1.2.2.jar</systemPath>
 			<scope>system</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.perceivedev</groupId>
+			<artifactId>perceivecore</artifactId>
+			<version>0.0.1</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<defaultGoal>clean compile test package</defaultGoal>
@@ -43,9 +49,8 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.3</version>
+				<version>3.5.1</version>
 				<configuration>
-					<!-- http://maven.apache.org/plugins/maven-compiler-plugin/ -->
 					<source>1.8</source>
 					<target>1.8</target>
 				</configuration>

@@ -1,8 +1,9 @@
-name: FactionsWar
 main: com.perceivedev.factionswar.FactionsWar
-version: 1.0
-description: A FactionsWar plugin for FactionsOne
-author: [EndureBlackout]
+name: FactionsWar
+version: 1.0.0
+description: A war plugin for FactionsOne
+author: [Rayzr]
+depend: [PerceiveCore]
 commands:
   faction:
     description: Main command for FactionsWar
