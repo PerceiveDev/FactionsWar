@@ -6,14 +6,11 @@ package com.perceivedev.factionswar.gui;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
-
+import com.massivecraft.factions.FPlayer;
 import com.massivecraft.factions.Faction;
 import com.perceivedev.factionswar.FactionsWar;
 import com.perceivedev.perceivecore.gui.Gui;
 import com.perceivedev.perceivecore.gui.components.panes.FlowPane;
-import com.perceivedev.perceivecore.util.ItemFactory;
 
 /**
  * @author Rayzr
@@ -21,11 +18,8 @@ import com.perceivedev.perceivecore.util.ItemFactory;
  */
 public class WarGui extends Gui {
 
-    public static final ItemFactory PLAYER_ICON          = ItemFactory.builder(Material.SKULL_ITEM).setDurability((short) 3);
-    public static final ItemFactory PLAYER_ICON_SELECTED = PLAYER_ICON.clone().addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
-
-    private Faction                 faction;
-    private FlowPane                players;
+    private Faction  faction;
+    private FlowPane players;
 
     /**
      * 
@@ -41,9 +35,14 @@ public class WarGui extends Gui {
      */
     private void init() {
         players = new FlowPane(9, 5);
-        faction.getFPlayers().forEach(player -> {
+
+        FPlayer[] fplayers = faction.getFPlayers().toArray(new FPlayer[0]);
+        // This makes sure not to go over the size of the FlowPane
+        for (int i = 0; i < Math.min(fplayers.length, 45); i++) {
+            FPlayer player = fplayers[i];
             players.addComponent(new PlayerButton(player, this));
-        });
+        }
+
         addComponent(players);
     }
 

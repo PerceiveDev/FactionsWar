@@ -3,6 +3,8 @@
  */
 package com.perceivedev.factionswar.gui;
 
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
@@ -11,6 +13,7 @@ import com.massivecraft.factions.FPlayer;
 import com.perceivedev.factionswar.FactionsWar;
 import com.perceivedev.perceivecore.gui.ClickEvent;
 import com.perceivedev.perceivecore.gui.components.simple.SimpleButton;
+import com.perceivedev.perceivecore.util.ItemFactory;
 
 /**
  * @author Rayzr
@@ -18,10 +21,18 @@ import com.perceivedev.perceivecore.gui.components.simple.SimpleButton;
  */
 public class PlayerButton extends SimpleButton {
 
-    private FPlayer player;
-    private WarGui  gui;
+    private static final ItemFactory PLAYER_ICON = ItemFactory.builder(Material.SKULL_ITEM).setDurability((short) 3);
 
-    private boolean selected = false;
+    public static final ItemFactory PLAYER_ICON(FPlayer player) {
+        return PLAYER_ICON.clone().setSkullOwner(player.getName());
+    }
+
+    public static final ItemFactory PLAYER_ICON_SELECTED = ItemFactory.builder(Material.BARRIER).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+
+    private FPlayer                 player;
+    private WarGui                  gui;
+
+    private boolean                 selected             = false;
 
     /**
      * @param player
@@ -68,10 +79,10 @@ public class PlayerButton extends SimpleButton {
     @Override
     public void render(Inventory inventory, Player ignored, int offsetX, int offsetY) {
         if (selected) {
-            setDisplayType(c -> WarGui.PLAYER_ICON_SELECTED.clone().setSkullOwner(player.getName()));
+            setDisplayType(c -> PLAYER_ICON_SELECTED);
             setName(FactionsWar.getInstance().tr("gui.head.name.selected", player.getName()));
         } else {
-            setDisplayType(c -> WarGui.PLAYER_ICON.clone().setSkullOwner(player.getName()));
+            setDisplayType(c -> PLAYER_ICON(player));
             setName(FactionsWar.getInstance().tr("gui.head.name", player.getName()));
         }
         super.render(inventory, ignored, offsetX, offsetY);
