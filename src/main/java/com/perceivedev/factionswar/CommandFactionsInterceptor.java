@@ -5,10 +5,15 @@ package com.perceivedev.factionswar;
 
 import java.util.Arrays;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import com.massivecraft.factions.FPlayer;
+import com.massivecraft.factions.FPlayers;
+import com.perceivedev.factionswar.gui.WarGui;
 
 /**
  * @author Rayzr
@@ -17,7 +22,6 @@ import org.bukkit.entity.Player;
 public class CommandFactionsInterceptor implements CommandExecutor {
 
     private CommandExecutor executor;
-    @SuppressWarnings("unused")
     private FactionsWar     plugin;
 
     /**
@@ -41,13 +45,15 @@ public class CommandFactionsInterceptor implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-
-        if (sender instanceof Player && args.length > 1) {
+        if (sender instanceof Player && args.length > 0) {
 
             Player player = (Player) sender;
             String sub = args[0].toLowerCase();
 
-            if (sub.equals("war")) {
+            if (args[0].equals("reload")) {
+                plugin.reload();
+                player.sendMessage(plugin.tr("config.reloaded"));
+            } else if (sub.equals("war")) {
                 commandWar(player, shift(args));
                 return true;
             } else if (sub.equals("setarena")) {
@@ -64,7 +70,12 @@ public class CommandFactionsInterceptor implements CommandExecutor {
     }
 
     private void commandWar(Player player, String[] args) {
-        // TODO: Open war GUI
+        FPlayer p = FPlayers.i.get(player);
+        if (p == null) {
+            player.sendMessage(ChatColor.RED + "You are not part of a faction!");
+            return;
+        }
+        new WarGui(p.getFaction()).open(player);
     }
 
     private void commandSetArena(Player player, String[] args) {

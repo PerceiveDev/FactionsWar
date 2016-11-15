@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -12,10 +13,18 @@ import com.perceivedev.perceivecore.language.I18N;
 
 public class FactionsWar extends JavaPlugin {
 
-    private I18N language;
+    private static FactionsWar instance;
+
+    private I18N               language;
+
+    private CommandExecutor    oldExeuctor;
+
+    private PluginCommand      command;
 
     @Override
     public void onEnable() {
+
+        instance = this;
 
         P plugin = getPlugin(P.class);
         if (plugin == null) {
@@ -25,6 +34,21 @@ public class FactionsWar extends JavaPlugin {
             return;
         }
 
+        setupLanguage();
+
+        command = plugin.getCommand("factions");
+        oldExeuctor = command.getExecutor();
+        command.setExecutor(new CommandFactionsInterceptor(oldExeuctor, this));
+
+    }
+
+    @Override
+    public void onDisable() {
+        instance = null;
+        command.setExecutor(oldExeuctor);
+    }
+
+    private void setupLanguage() {
         Path output = getDataFolder().toPath().resolve("language");
 
         if (Files.notExists(output)) {
@@ -38,10 +62,10 @@ public class FactionsWar extends JavaPlugin {
         I18N.copyDefaultFiles("language", output, false, getFile());
 
         language = new I18N(this, "language");
+    }
 
-        PluginCommand current = plugin.getCommand("factions");
-        current.setExecutor(new CommandFactionsInterceptor(current.getExecutor(), this));
-
+    public void reload() {
+        language.reload();
     }
 
     public void err(String msg) {
@@ -64,6 +88,10 @@ public class FactionsWar extends JavaPlugin {
      */
     public String tr(String key, Object... formattingObjects) {
         return language.tr(key, formattingObjects);
+    }
+
+    public static FactionsWar getInstance() {
+        return instance;
     }
 
 }

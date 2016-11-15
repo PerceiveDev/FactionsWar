@@ -3,7 +3,7 @@ name: FactionsWar
 version: 1.0.0
 description: A war plugin for FactionsOne
 author: [Rayzr]
-depend: [PerceiveCore]
+depend: [PerceiveCore,Factions]
 commands:
   faction:
     description: Main command for FactionsWar
