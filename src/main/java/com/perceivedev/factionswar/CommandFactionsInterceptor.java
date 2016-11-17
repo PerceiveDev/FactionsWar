@@ -92,7 +92,6 @@ public class CommandFactionsInterceptor implements CommandExecutor {
         }
 
         player.sendMessage(plugin.tr("command.setarena.set", args[0], player.getLocation().toVector().toString()));
-
     }
 
     private void commandArenaTP(Player player, String[] args) {

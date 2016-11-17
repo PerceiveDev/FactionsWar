@@ -12,6 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.perceivedev.perceivecore.config.ConfigSerializable;
+import com.perceivedev.perceivecore.util.snapshots.Snapshot;
 
 /**
  * @author Rayzr
@@ -19,11 +20,11 @@ import com.perceivedev.perceivecore.config.ConfigSerializable;
  */
 public class Arena implements ConfigSerializable {
 
-    private transient Set<UUID>               players        = new LinkedHashSet<UUID>();
-    private transient HashMap<UUID, Location> originalSpawns = new LinkedHashMap<UUID, Location>();
+    private transient Set<UUID>                       players   = new LinkedHashSet<>();
+    private transient HashMap<UUID, Snapshot<Player>> snapshots = new LinkedHashMap<>();
 
-    private String                            name;
-    private Location                          spawn;
+    private String                                    name;
+    private Location                                  spawn;
 
     Arena() {
         // Empty constructor for SerializationManager to use
@@ -80,10 +81,49 @@ public class Arena implements ConfigSerializable {
      */
     public void kickAll() {
         players.forEach(id -> {
+            kick(id);
+        });
+        players.clear();
+        snapshots.clear();
+    }
+
+    public void join(Player player) {
+        players.add(player.getUniqueId());
+    }
+
+    public void start() {
+        players.stream().forEach(id -> {
             getPlayer(id).ifPresent(player -> {
-                Optional.ofNullable(originalSpawns.get(player)).ifPresent(loc -> {
-                    player.teleport(loc);
-                });
+                snapshots.put(id, Snapshot.ofPlayer(player));
+                // --------------- CLEAR THEIR DATA ---------------
+                player.getInventory().setStorageContents(null);
+                player.getActivePotionEffects().clear();
+                player.setHealth(player.getMaxHealth());
+                player.setFoodLevel(20);
+                player.setFireTicks(0);
+                player.setFallDistance(0.0f);
+                // ------------------------------------------------
+                player.teleport(spawn);
+            });
+        });
+    }
+
+    public void stop() {
+        kickAll();
+    }
+
+    /**
+     * @param id The UUID of the player to kick
+     */
+    public void kick(UUID id) {
+        if (!players.contains(id)) {
+            return;
+        }
+
+        getPlayer(id).ifPresent(player -> {
+            Optional.ofNullable(snapshots.get(player)).ifPresent(snapshot -> {
+                snapshot.restore(player);
+                snapshots.remove(id);
             });
         });
     }

@@ -1,5 +1,7 @@
 package com.perceivedev.factionswar.data;
 
+import java.util.Collection;
+
 import com.perceivedev.factionswar.FactionsWar;
 import com.perceivedev.perceivecore.config.util.DataFileManager;
 
@@ -44,6 +46,10 @@ public class ArenaManager {
 
     public Arena getArena(String name) {
         return arenas.get(name);
+    }
+
+    public Collection<Arena> getArenas() {
+        return arenas.values();
     }
 
 }

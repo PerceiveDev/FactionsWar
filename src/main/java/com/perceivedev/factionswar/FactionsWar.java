@@ -10,6 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.massivecraft.factions.P;
 import com.perceivedev.factionswar.data.ArenaManager;
+import com.perceivedev.factionswar.listener.PlayerListener;
 import com.perceivedev.perceivecore.language.I18N;
 
 public class FactionsWar extends JavaPlugin {
@@ -47,10 +48,15 @@ public class FactionsWar extends JavaPlugin {
         oldExeuctor = command.getExecutor();
         command.setExecutor(new CommandFactionsInterceptor(oldExeuctor, this));
 
+        getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+
     }
 
     @Override
     public void onDisable() {
+
+        arenaManager.getArenas().forEach(arena -> arena.kickAll());
+
         save();
 
         command.setExecutor(oldExeuctor);
