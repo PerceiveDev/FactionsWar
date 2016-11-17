@@ -9,6 +9,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.massivecraft.factions.P;
+import com.perceivedev.factionswar.data.ArenaManager;
 import com.perceivedev.perceivecore.language.I18N;
 
 public class FactionsWar extends JavaPlugin {
@@ -20,6 +21,8 @@ public class FactionsWar extends JavaPlugin {
     private CommandExecutor    oldExeuctor;
 
     private PluginCommand      command;
+
+    private ArenaManager       arenaManager;
 
     @Override
     public void onEnable() {
@@ -36,6 +39,10 @@ public class FactionsWar extends JavaPlugin {
 
         setupLanguage();
 
+        arenaManager = new ArenaManager(this);
+
+        reload();
+
         command = plugin.getCommand("factions");
         oldExeuctor = command.getExecutor();
         command.setExecutor(new CommandFactionsInterceptor(oldExeuctor, this));
@@ -44,8 +51,11 @@ public class FactionsWar extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        instance = null;
+        save();
+
         command.setExecutor(oldExeuctor);
+
+        instance = null;
     }
 
     private void setupLanguage() {
@@ -66,6 +76,11 @@ public class FactionsWar extends JavaPlugin {
 
     public void reload() {
         language.reload();
+        arenaManager.load();
+    }
+
+    public void save() {
+        arenaManager.save();
     }
 
     public void err(String msg) {
@@ -92,6 +107,13 @@ public class FactionsWar extends JavaPlugin {
 
     public static FactionsWar getInstance() {
         return instance;
+    }
+
+    /**
+     * @return
+     */
+    public ArenaManager getArenaManager() {
+        return arenaManager;
     }
 
 }
