@@ -5,6 +5,7 @@ package com.perceivedev.factionswar;
 
 import java.util.Arrays;
 
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -56,8 +57,11 @@ public class CommandFactionsInterceptor implements CommandExecutor {
             } else if (sub.equals("war")) {
                 commandWar(player, shift(args));
                 return true;
-            } else if (sub.equals("setarena")) {
-                commandSetArena(player, shift(args));
+            } else if (sub.equals("createarena")) {
+                commandCreateArena(player, shift(args));
+                return true;
+            } else if (sub.equals("setarenaspawn")) {
+                commandSetArenaSpawn(player, shift(args));
                 return true;
             } else if (sub.equals("arenatp")) {
                 commandArenaTP(player, shift(args));
@@ -78,20 +82,50 @@ public class CommandFactionsInterceptor implements CommandExecutor {
         new WarGui(p.getFaction()).open(player);
     }
 
-    private void commandSetArena(Player player, String[] args) {
+    private void commandCreateArena(Player player, String[] args) {
         if (args.length < 1) {
-            player.sendMessage(plugin.tr("command.setarena.usage"));
+            player.sendMessage(plugin.tr("command.createarena.usage"));
+            return;
+        }
+
+        if (plugin.getArenaManager().getArena(args[0]) == null) {
+            plugin.getArenaManager().addArena(new Arena(args[0]));
+            player.sendMessage(plugin.tr("command.createarena.created", args[0]));
+        } else {
+            player.sendMessage(plugin.tr("arena.already.exists"));
+        }
+
+    }
+
+    private void commandSetArenaSpawn(Player player, String[] args) {
+        if (args.length < 2 || !args[1].matches("^\\d$")) {
+            player.sendMessage(plugin.tr("command.setarenaspawn.usage"));
             return;
         }
 
         Arena arena = plugin.getArenaManager().getArena(args[0]);
         if (arena == null) {
-            arena = plugin.getArenaManager().addArena(new Arena(args[0], player.getLocation()));
-        } else {
-            arena.setSpawn(player.getLocation());
+            player.sendMessage(plugin.tr("arena.invalid", args[0]));
+            return;
         }
 
-        player.sendMessage(plugin.tr("command.setarena.set", args[0], player.getLocation().toVector().toString()));
+        int i = Integer.parseInt(args[1]);
+        if (i < 1 || i > 2) {
+            player.sendMessage(plugin.tr("command.setarenaspawn.usage"));
+            return;
+        }
+
+        Location loc = player.getLocation();
+
+        switch (i) {
+            case 1:
+                arena.setSpawn1(loc);
+            case 2:
+                arena.setSpawn2(loc);
+        }
+
+        player.sendMessage(plugin.tr("command.setarenaspawn.set" + i, args[0], loc.toVector().toBlockVector().toString()));
+
     }
 
     private void commandArenaTP(Player player, String[] args) {

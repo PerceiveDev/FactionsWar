@@ -24,15 +24,15 @@ public class Arena implements ConfigSerializable {
     private transient HashMap<UUID, Snapshot<Player>> snapshots = new LinkedHashMap<>();
 
     private String                                    name;
-    private Location                                  spawn;
+    private Location                                  spawn1;
+    private Location                                  spawn2;
 
     Arena() {
         // Empty constructor for SerializationManager to use
     }
 
-    public Arena(String name, Location spawn) {
+    public Arena(String name) {
         this.name = name;
-        this.spawn = spawn;
     }
 
     /**
@@ -45,15 +45,29 @@ public class Arena implements ConfigSerializable {
     /**
      * @return the spawn of the arena
      */
-    public Location getSpawn() {
-        return spawn;
+    public Location getSpawn1() {
+        return spawn1;
     }
 
     /**
-     * @param spawn the spawn of the arena to set
+     * @param spawn1 the spawn of the arena to set for team 1
      */
-    public void setSpawn(Location spawn) {
-        this.spawn = spawn;
+    public void setSpawn1(Location spawn1) {
+        this.spawn1 = spawn1;
+    }
+
+    /**
+     * @return the spawn of the arena
+     */
+    public Location getSpawn2() {
+        return spawn2;
+    }
+
+    /**
+     * @param spawn2 the spawn of the arena to set for team 2
+     */
+    public void setSpawn2(Location spawn2) {
+        this.spawn2 = spawn2;
     }
 
     public boolean hasPlayer(Player player) {
@@ -103,7 +117,7 @@ public class Arena implements ConfigSerializable {
                 player.setFireTicks(0);
                 player.setFallDistance(0.0f);
                 // ------------------------------------------------
-                player.teleport(spawn);
+                // player.teleport(spawn);
             });
         });
     }

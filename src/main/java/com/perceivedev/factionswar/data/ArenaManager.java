@@ -1,6 +1,7 @@
 package com.perceivedev.factionswar.data;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 
 import com.perceivedev.factionswar.FactionsWar;
 import com.perceivedev.perceivecore.config.util.DataFileManager;
@@ -17,7 +18,7 @@ public class ArenaManager {
 
     public ArenaManager(FactionsWar plugin) {
         this.plugin = plugin;
-        arenas = new DataFileManager<>(plugin, "arenas.yml", String.class, Arena.class);
+        arenas = new DataFileManager<>(plugin.getDataFolder().toPath().resolve("arenas.yml"), String.class, Arena.class, new LinkedHashMap<>());
     }
 
     /**
