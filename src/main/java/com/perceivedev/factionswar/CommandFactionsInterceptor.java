@@ -61,6 +61,9 @@ public class CommandFactionsInterceptor implements CommandExecutor {
             } else if (sub.equals("createarena")) {
                 commandCreateArena(player, shift(args));
                 return true;
+            } else if (sub.equals("removearena")) {
+                commandRemoveArena(player, shift(args));
+                return true;
             } else if (sub.equals("setarenaspawn")) {
                 commandSetArenaSpawn(player, shift(args));
                 return true;
@@ -89,11 +92,25 @@ public class CommandFactionsInterceptor implements CommandExecutor {
             return;
         }
 
-        if (plugin.getArenaManager().getArena(args[0]) == null) {
+        if (!plugin.getArenaManager().getArena(args[0]).isPresent()) {
             plugin.getArenaManager().addArena(new Arena(args[0]));
             player.sendMessage(plugin.tr("command.createarena.created", args[0]));
         } else {
             player.sendMessage(plugin.tr("arena.already.exists"));
+        }
+
+    }
+
+    private void commandRemoveArena(Player player, String[] args) {
+        if (args.length < 1) {
+            player.sendMessage(plugin.tr("command.removearena.usage"));
+            return;
+        }
+
+        if (plugin.getArenaManager().removeArena(args[0])) {
+            player.sendMessage(plugin.tr("command.removearena.removed", args[0]));
+        } else {
+            player.sendMessage(plugin.tr("arena.invalid"));
         }
 
     }
@@ -141,8 +158,17 @@ public class CommandFactionsInterceptor implements CommandExecutor {
             return;
         }
 
-        player.teleport(arena.get().getSpawn1());
-        player.sendMessage(plugin.tr("command.arenatp.teleported", args[0]));
+        int i = 1;
+        if (args.length > 1 && args[1].matches("^\\d$")) {
+            i = Integer.valueOf(args[1]);
+            if (i < 1 || i > 2) {
+                player.sendMessage(plugin.tr("command.arenatp.usage"));
+                return;
+            }
+        }
+
+        player.teleport(i == 1 ? arena.get().getSpawn1() : arena.get().getSpawn2());
+        player.sendMessage(plugin.tr("command.arenatp.teleported", i, args[0]));
     }
 
 }

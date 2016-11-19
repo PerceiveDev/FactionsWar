@@ -2,10 +2,11 @@ package com.perceivedev.factionswar.data;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -20,7 +21,7 @@ import com.perceivedev.perceivecore.util.snapshots.Snapshot;
  */
 public class Arena implements ConfigSerializable {
 
-    private transient Set<UUID>                       players   = new LinkedHashSet<>();
+    private transient HashMap<UUID, Integer>          players   = new LinkedHashMap<>();
     private transient HashMap<UUID, Snapshot<Player>> snapshots = new LinkedHashMap<>();
 
     private String                                    name;
@@ -71,19 +72,15 @@ public class Arena implements ConfigSerializable {
     }
 
     public boolean hasPlayer(Player player) {
-        return players.contains(player.getUniqueId());
+        return players.containsKey(player.getUniqueId());
     }
 
     public boolean removePlayer(Player player) {
-        return players.remove(player.getUniqueId());
-    }
-
-    public boolean addPlayer(Player player) {
-        return players.add(player.getUniqueId());
+        return players.remove(player.getUniqueId()) != null;
     }
 
     public Set<UUID> getPlayers() {
-        return players;
+        return players.keySet();
     }
 
     public Optional<Player> getPlayer(UUID id) {
@@ -94,21 +91,21 @@ public class Arena implements ConfigSerializable {
      * @return
      */
     public void kickAll() {
-        players.forEach(id -> {
+        players.keySet().forEach(id -> {
             kick(id);
         });
         players.clear();
         snapshots.clear();
     }
 
-    public void join(Player player) {
-        players.add(player.getUniqueId());
+    public boolean join(UUID player, int team) {
+        return players.containsKey(player) ? false : players.put(player, team) == null;
     }
 
     public void start() {
-        players.stream().forEach(id -> {
-            getPlayer(id).ifPresent(player -> {
-                snapshots.put(id, Snapshot.ofPlayer(player));
+        players.entrySet().stream().forEach(e -> {
+            getPlayer(e.getKey()).ifPresent(player -> {
+                snapshots.put(e.getKey(), Snapshot.ofPlayer(player));
                 // --------------- CLEAR THEIR DATA ---------------
                 player.getInventory().setStorageContents(null);
                 player.getActivePotionEffects().clear();
@@ -117,7 +114,7 @@ public class Arena implements ConfigSerializable {
                 player.setFireTicks(0);
                 player.setFallDistance(0.0f);
                 // ------------------------------------------------
-                // player.teleport(spawn);
+                player.teleport(e.getValue() == 1 ? spawn1 : spawn2);
             });
         });
     }
@@ -130,7 +127,7 @@ public class Arena implements ConfigSerializable {
      * @param id The UUID of the player to kick
      */
     public void kick(UUID id) {
-        if (!players.contains(id)) {
+        if (!players.containsKey(id)) {
             return;
         }
 
@@ -140,6 +137,11 @@ public class Arena implements ConfigSerializable {
                 snapshots.remove(id);
             });
         });
+        players.remove(id);
+    }
+
+    public List<UUID> getPlayersOnTeam(int i) {
+        return players.entrySet().stream().filter(e -> e.getValue() == i).map(e -> e.getKey()).collect(Collectors.toList());
     }
 
 }

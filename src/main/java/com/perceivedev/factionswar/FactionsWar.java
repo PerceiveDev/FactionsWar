@@ -10,6 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.massivecraft.factions.P;
 import com.perceivedev.factionswar.data.ArenaManager;
+import com.perceivedev.factionswar.data.WarManager;
 import com.perceivedev.factionswar.listener.PlayerListener;
 import com.perceivedev.perceivecore.language.I18N;
 
@@ -18,19 +19,16 @@ public class FactionsWar extends JavaPlugin {
     private static FactionsWar instance;
 
     private I18N               language;
+    private ArenaManager       arenaManager;
+    private WarManager         warManager;
 
     private CommandExecutor    oldExeuctor;
-
     private PluginCommand      command;
-
-    private ArenaManager       arenaManager;
 
     @Override
     public void onEnable() {
 
-        instance = this;
-
-        P plugin = getPlugin(P.class);
+        P plugin = P.p;
         if (plugin == null) {
             err("-===- FactionsOne could not be found! Make sure you have it installed. -===-");
             err("Download it on Spigot > https://www.spigotmc.org/resources/factionsone.9249/");
@@ -38,9 +36,12 @@ public class FactionsWar extends JavaPlugin {
             return;
         }
 
+        instance = this;
+
         setupLanguage();
 
         arenaManager = new ArenaManager(this);
+        warManager = new WarManager(this);
 
         reload();
 
@@ -54,6 +55,10 @@ public class FactionsWar extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        // Easy test to see if this was disabled in onEnable
+        if (instance == null) {
+            return;
+        }
 
         arenaManager.getArenas().forEach(arena -> arena.kickAll());
 
@@ -115,11 +120,12 @@ public class FactionsWar extends JavaPlugin {
         return instance;
     }
 
-    /**
-     * @return
-     */
     public ArenaManager getArenaManager() {
         return arenaManager;
+    }
+
+    public WarManager getWarManager() {
+        return warManager;
     }
 
 }

@@ -2,8 +2,10 @@ package com.perceivedev.factionswar.data;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.perceivedev.factionswar.FactionsWar;
 import com.perceivedev.perceivecore.config.util.DataFileManager;
@@ -73,6 +75,21 @@ public class ArenaManager {
      */
     public void kick(UUID player) {
         getArena(player).ifPresent(a -> a.kick(player));
+    }
+
+    /**
+     * @param name the name of the arena
+     * @return If anything was removed, this returns {@code true}. Otherwise it
+     *         returns {@code false}.
+     */
+    public boolean removeArena(String name) {
+        return arenas.remove(name) != null;
+    }
+
+    public Optional<Arena> getRandomArena() {
+        int place = (int) (Math.random() * (arenas.size() - 1));
+        List<Arena> available = arenas.values().stream().filter(arena -> arena.getPlayers().size() < 1).collect(Collectors.toList());
+        return available.size() < 1 ? Optional.empty() : Optional.of(available.toArray(new Arena[0])[place]);
     }
 
 }
