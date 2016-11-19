@@ -4,6 +4,7 @@
 package com.perceivedev.factionswar;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -103,8 +104,8 @@ public class CommandFactionsInterceptor implements CommandExecutor {
             return;
         }
 
-        Arena arena = plugin.getArenaManager().getArena(args[0]);
-        if (arena == null) {
+        Optional<Arena> arena = plugin.getArenaManager().getArena(args[0]);
+        if (!arena.isPresent()) {
             player.sendMessage(plugin.tr("arena.invalid", args[0]));
             return;
         }
@@ -119,9 +120,9 @@ public class CommandFactionsInterceptor implements CommandExecutor {
 
         switch (i) {
             case 1:
-                arena.setSpawn1(loc);
+                arena.get().setSpawn1(loc);
             case 2:
-                arena.setSpawn2(loc);
+                arena.get().setSpawn2(loc);
         }
 
         player.sendMessage(plugin.tr("command.setarenaspawn.set" + i, args[0], loc.toVector().toBlockVector().toString()));
@@ -129,7 +130,19 @@ public class CommandFactionsInterceptor implements CommandExecutor {
     }
 
     private void commandArenaTP(Player player, String[] args) {
-        // TODO: Teleport to the arena
+        if (args.length < 1) {
+            player.sendMessage(plugin.tr("command.arenatp.usage"));
+            return;
+        }
+
+        Optional<Arena> arena = plugin.getArenaManager().getArena(args[0]);
+        if (!arena.isPresent()) {
+            player.sendMessage(plugin.tr("arena.invalid", args[0]));
+            return;
+        }
+
+        player.teleport(arena.get().getSpawn1());
+        player.sendMessage(plugin.tr("command.arenatp.teleported", args[0]));
     }
 
 }

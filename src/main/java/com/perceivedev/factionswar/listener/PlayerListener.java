@@ -20,14 +20,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
-        plugin.getArenaManager().getArenas().forEach(arena -> {
-            arena.getPlayers().forEach(id -> {
-                if (id.equals(e.getPlayer().getUniqueId())) {
-                    arena.kick(id);
-                    return;
-                }
-            });
-        });
+        plugin.getArenaManager().kick(e.getPlayer().getUniqueId());
     }
 
 }

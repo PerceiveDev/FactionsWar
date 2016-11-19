@@ -2,6 +2,8 @@ package com.perceivedev.factionswar.data;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.Optional;
+import java.util.UUID;
 
 import com.perceivedev.factionswar.FactionsWar;
 import com.perceivedev.perceivecore.config.util.DataFileManager;
@@ -45,12 +47,32 @@ public class ArenaManager {
         return arenas.put(arena.getName(), arena);
     }
 
-    public Arena getArena(String name) {
-        return arenas.get(name);
+    public Optional<Arena> getArena(String name) {
+        return Optional.ofNullable(arenas.get(name));
+    }
+
+    /**
+     * Gets the arena the player is currently in
+     * 
+     * @param player the player
+     * @return The {@link Arena} the player is currently in, or {@code null}
+     */
+    public Optional<Arena> getArena(UUID player) {
+        return arenas.values().stream().filter(arena -> arena.getPlayers().contains(player))
+                .findFirst();
     }
 
     public Collection<Arena> getArenas() {
         return arenas.values();
+    }
+
+    /**
+     * Kicks a player if they're in an arena
+     * 
+     * @param player the player to kick
+     */
+    public void kick(UUID player) {
+        getArena(player).ifPresent(a -> a.kick(player));
     }
 
 }
