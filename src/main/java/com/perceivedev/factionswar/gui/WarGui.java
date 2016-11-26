@@ -49,7 +49,7 @@ public class WarGui extends Gui {
             players.addComponent(new PlayerButton(player, this));
         }
 
-        addComponent(players);
+        getRootAsFreeform().addComponent(players);
     }
 
     public void checkPlayerCount() {

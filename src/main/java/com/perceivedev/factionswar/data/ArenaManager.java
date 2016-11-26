@@ -16,12 +16,9 @@ import com.perceivedev.perceivecore.config.util.DataFileManager;
  */
 public class ArenaManager {
 
-    @SuppressWarnings("unused")
-    private FactionsWar                    plugin;
     private DataFileManager<String, Arena> arenas;
 
     public ArenaManager(FactionsWar plugin) {
-        this.plugin = plugin;
         arenas = new DataFileManager<>(plugin.getDataFolder().toPath().resolve("arenas.yml"), String.class, Arena.class, new LinkedHashMap<>());
     }
 

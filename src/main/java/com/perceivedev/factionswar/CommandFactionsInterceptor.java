@@ -138,8 +138,12 @@ public class CommandFactionsInterceptor implements CommandExecutor {
         switch (i) {
             case 1:
                 arena.get().setSpawn1(loc);
+                break;
             case 2:
                 arena.get().setSpawn2(loc);
+                break;
+            default:
+                throw new IllegalStateException("Team number is invalid? " + i);
         }
 
         player.sendMessage(plugin.tr("command.setarenaspawn.set" + i, args[0], loc.toVector().toBlockVector().toString()));
@@ -160,7 +164,7 @@ public class CommandFactionsInterceptor implements CommandExecutor {
 
         int i = 1;
         if (args.length > 1 && args[1].matches("^\\d$")) {
-            i = Integer.valueOf(args[1]);
+            i = Integer.parseInt(args[1]);
             if (i < 1 || i > 2) {
                 player.sendMessage(plugin.tr("command.arenatp.usage"));
                 return;
